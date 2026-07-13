@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'users',
 ]
 
@@ -128,3 +131,22 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
+# Configure Token Lifetimes according to the security guide
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),   # Short-lived token used for API requests
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # Long-lived token used to get a new access token
+    'ROTATE_REFRESH_TOKENS': True,                    # Issues a brand new refresh token whenever one is used
+    'BLACKLIST_AFTER_ROTATION': True,                 # Immediately blacklists the old refresh token so it cannot be reused
+
+}
