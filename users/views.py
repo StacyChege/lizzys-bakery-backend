@@ -1,13 +1,13 @@
 from rest_framework import generics, status
-from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 
 User = get_user_model()
 
-# 1. Customizing the Login Response to return User details with the JWTs
+# 1. Custom Serializer to include user details in the login response
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
@@ -16,11 +16,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['user'] = user_serializer.data
         return data
 
+# 2. Custom Login View
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-
-# 2. Registration View
+# 3. Registration View
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -30,9 +30,17 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
-        # Return serialized user info upon successful creation
         user_data = UserSerializer(user).data
         return Response({
             "message": "User registered successfully!",
             "user": user_data
         }, status=status.HTTP_201_CREATED)
+
+# 4. User Profile View (The /me/ endpoint)
+class UserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]  # Requires a valid JWT token in the Authorization header
+
+    def get_object(self):
+        # Returns the logged-in user making the request
+        return self.request.user
