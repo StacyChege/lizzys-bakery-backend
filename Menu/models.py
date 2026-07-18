@@ -51,3 +51,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='products/')
+    sort_order = models.IntegerField(default=0)  # sort_order=0 is treated as the main photo
+
+    class Meta:
+        ordering = ['sort_order']
+
+    def __str__(self):
+        return f"Image for {self.product.name}"

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
     'users',
+    'Menu',
 ]
 
 MIDDLEWARE = [
@@ -150,3 +151,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,                 # Immediately blacklists the old refresh token so it cannot be reused
 
 }
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
