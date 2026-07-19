@@ -1,6 +1,7 @@
 from rest_framework import generics
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductListSerializer, ProductDetailSerializer
+from .filters import ProductFilter
 
 
 class CategoryListView(generics.ListAPIView):
@@ -9,8 +10,10 @@ class CategoryListView(generics.ListAPIView):
 
 
 class ProductListView(generics.ListAPIView):
-    queryset = Product.objects.filter(is_available=True)  # only show what's actually orderable
+    queryset = Product.objects.filter(is_available=True)
     serializer_class = ProductListSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
 
 class ProductDetailView(generics.RetrieveAPIView):
